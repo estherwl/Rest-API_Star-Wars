@@ -15,20 +15,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -79,6 +74,27 @@ public class JediControllerTest {
     }
 
     // TODO: Teste do POST com sucesso
+    @Test
+    @DisplayName("POST /jedi- SUCCESS")
+    public void testCreateJediWithSuccess() throws Exception {
+
+        Jedi mockJedi = new Jedi(1, "HanSolo", 10, 1);
+        Mockito.when(jediService.save(any(Jedi.class))).thenReturn(mockJedi);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/jedi")
+                       .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(mockJedi))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("HanSolo")))
+                .andExpect(jsonPath("$.strength", is(10)))
+                .andExpect(jsonPath("$.version", is(1)));
+    }
 
     // TODO: Teste do PUT com sucesso
 
@@ -91,8 +107,6 @@ public class JediControllerTest {
     // TODO: Teste do delete com erro - deletar um id ja deletado
 
     // TODO: Teste do delete com erro  - internal server error
-
-
 
 
     static String asJsonString(final Object obj) {
