@@ -6,11 +6,13 @@ import com.bootcampjava.startwars.service.JediService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 @RestController
 public class JediController {
@@ -24,12 +26,12 @@ public class JediController {
     }
 
     @GetMapping("/jedi/{id}")
-    public ResponseEntity<?> getJedi(@PathVariable int id) {
+    public ResponseEntity<?> getJedi(@PathVariable Integer id) {
 
         return jediService.findById(id)
                 .map(jedi -> {
                     try {
-                        return  ResponseEntity
+                        return ResponseEntity
                                 .ok()
                                 .eTag(Integer.toString(jedi.getVersion()))
                                 .location(new URI("/jedi/" + jedi.getId()))
@@ -54,6 +56,38 @@ public class JediController {
         } catch (URISyntaxException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PutMapping("/jedi/{id}")
+    public ResponseEntity<Jedi> updateJedi(@RequestBody Jedi jedi, @PathVariable Integer id) {
+
+//        Optional<Jedi> jediDeclarated = jediService.findById(id);
+//
+//        jediDeclarated.map(j -> {
+//            j.setName(jedi.getName());
+//            j.setStrength(jedi.getStrength());
+//            j = jediService.save(j);
+//            return jediDeclarated;
+//        });
+
+        try {
+            jediService.findById(id);
+            return ResponseEntity
+                    .ok()
+                    .location(new URI("/jedi/" + jedi.getId()))
+                    .eTag(Integer.toString(jedi.getVersion()))
+                    .body(jedi);
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/jedi/{id}")
+    public ResponseEntity<?> deleteJedi(@PathVariable Integer id) throws URISyntaxException {
+        Optional<Jedi> foundJedi = jediService.findById(id);
+        jediService.delete(id);
+        return ResponseEntity
+                .ok(foundJedi);
     }
 
 }
