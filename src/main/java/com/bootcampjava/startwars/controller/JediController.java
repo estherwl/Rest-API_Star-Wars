@@ -83,11 +83,14 @@ public class JediController {
     }
 
     @DeleteMapping("/jedi/{id}")
-    public ResponseEntity<?> deleteJedi(@PathVariable Integer id) throws URISyntaxException {
-        Optional<Jedi> foundJedi = jediService.findById(id);
-        jediService.delete(id);
-        return ResponseEntity
-                .ok(foundJedi);
+    public ResponseEntity<?> deleteJedi(@PathVariable Integer id) {
+        return jediService.findById(id).map(jedi -> {
+            if (jediService.delete(jedi.getId())) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }).orElse(ResponseEntity.notFound().build());
     }
 
 }
