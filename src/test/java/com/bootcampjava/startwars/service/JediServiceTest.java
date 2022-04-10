@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class JediTestService {
+public class JediServiceTest {
 
     @Autowired
     private JediService jediService;
