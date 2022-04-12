@@ -1,4 +1,4 @@
-# Rest API Star Wars
+# API RESTful - Star Wars
 API desenvolvida durante o bootcamp de Backend Java da WoMakersCode, utilizada para cadastrar novos Jedis.
 Durante o desenvolvimento da aplicação foram abordados assuntos como MVC, Rest API, como mapear uma API antes de desenvolver, TDD e testes unitários.
 
