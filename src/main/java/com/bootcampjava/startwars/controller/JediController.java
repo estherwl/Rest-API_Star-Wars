@@ -59,27 +59,37 @@ public class JediController {
     }
 
     @PutMapping("/jedi/{id}")
-    public ResponseEntity<Jedi> updateJedi(@RequestBody Jedi jedi, @PathVariable Integer id) {
+    public ResponseEntity<?> updateJedi(@RequestBody Jedi jedi,
+                                           @PathVariable Integer id,
+                                           @RequestHeader("If-Match") Integer ifMatch)
+    {
 
-//        Optional<Jedi> jediDeclarated = jediService.findById(id);
-//
-//        jediDeclarated.map(j -> {
-//            j.setName(jedi.getName());
-//            j.setStrength(jedi.getStrength());
-//            j = jediService.save(j);
-//            return jediDeclarated;
-//        });
+        Optional<Jedi> existingJedi = jediService.findById(id);
 
-        try {
-            jediService.findById(id);
-            return ResponseEntity
-                    .ok()
-                    .location(new URI("/jedi/" + jedi.getId()))
-                    .eTag(Integer.toString(jedi.getVersion()))
-                    .body(jedi);
-        } catch (URISyntaxException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return existingJedi.map(j -> {
+            if(!(j.getVersion() == ifMatch)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            j.setName(jedi.getName());
+            j.setStrength(j.getStrength());
+            j.setVersion(j.getVersion() + 1);
+
+            try {
+                // Update the product and return an ok response
+                if (jediService.update(j)) {
+                    return ResponseEntity.ok()
+                            .location(new URI("/jedi/" + j.getId()))
+                            .eTag(Integer.toString(j.getVersion()))
+                            .body(j);
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
+            } catch (URISyntaxException e) {
+                // An error occurred trying to create the location URI, return an error
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/jedi/{id}")
