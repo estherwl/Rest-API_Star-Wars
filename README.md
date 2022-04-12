@@ -9,9 +9,11 @@ JediServiceTest
 - [x] Criar um teste pro findAll()
 
 JediControllerTest
-- [ ] Teste do PUT com sucesso
-- [ ] Teste do PUT com uma versao igual da ja existente - deve retornar um conflito
-- [ ] Teste do PUT com erro - not found
-- [ ] Teste do delete com sucesso
-- [ ] Teste do delete com erro - deletar um id ja deletado
-- [ ] Teste do delete com erro - internal server error
+- [x] Teste do PUT com sucesso
+- [x] Teste do PUT com uma versao igual da ja existente - deve retornar um conflito
+- [x] Teste do PUT com erro - not found
+- [x] Teste do delete com sucesso
+- [x] Teste do delete com erro - deletar um id ja deletado
+- [x] Teste do delete com erro - internal server error
+
+
